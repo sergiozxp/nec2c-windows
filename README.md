@@ -51,6 +51,10 @@ En la salida buscar:
 
 La carpeta `Input/` trae unos cien archivos de ejemplo del proyecto original (antenas Yagi, entre otras).
 
+### Leer la salida desde un programa
+
+Si analizas la salida con un script, conviene hacerlo de forma tolerante: ver [docs/LEER_SALIDA.md](docs/LEER_SALIDA.md) y el ejemplo `examples/leer_salida.py`.
+
 ### Formato de entrada
 
 Es el formato clásico de NEC-2, con una tarjeta por línea. Las más usadas:
