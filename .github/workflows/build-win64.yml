@@ -3,6 +3,9 @@ name: build-nec2c-win64
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'examples/**'
   workflow_dispatch:
 
 permissions:
