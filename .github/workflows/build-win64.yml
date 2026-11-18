@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: build-win64
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: windows-latest
@@ -26,7 +30,7 @@ jobs:
       - name: Compilar nec2c.exe (estático, 64 bits)
         shell: msys2 {0}
         run: |
-          gcc -O2 -static -DPACKAGE_STRING='"nec2c 1.3"' -o nec2c.exe \
+          gcc -O2 -static -Wl,--no-insert-timestamp -DPACKAGE_STRING='"nec2c 1.3"' -o nec2c.exe \
             calculations.c geometry.c input.c matrix.c network.c shared.c fields.c \
             ground.c main.c misc.c radiation.c somnec.c -lm
           file nec2c.exe || true

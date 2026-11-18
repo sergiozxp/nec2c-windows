@@ -34,7 +34,7 @@ nec2c.exe -i entrada.nec -o salida.txt
 | `-v` | muestra la versión y termina |
 | `-h` | muestra la ayuda y termina |
 
-Sin opciones, el programa pide los nombres de archivo por teclado.
+Sin argumentos, el programa muestra la ayuda y termina.
 
 ### Ejemplo
 
@@ -104,7 +104,7 @@ La referencia completa está en el manual de NEC-2 (Burke y Poggio, Lawrence Liv
 pacman -S --needed git mingw-w64-ucrt-x86_64-gcc
 git clone https://github.com/sergiozxp/nec2c-windows
 cd nec2c-windows
-gcc -O2 -static -DPACKAGE_STRING='"nec2c 1.3"' -o nec2c.exe \
+gcc -O2 -static -Wl,--no-insert-timestamp -DPACKAGE_STRING='"nec2c 1.3"' -o nec2c.exe \
   calculations.c geometry.c input.c matrix.c network.c shared.c fields.c \
   ground.c main.c misc.c radiation.c somnec.c -lm
 ./nec2c.exe -v
