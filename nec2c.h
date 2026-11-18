@@ -12,7 +12,11 @@
 #include <errno.h>
 #include <time.h>
 #include <sys/types.h>
+#if defined(_WIN32) || defined(NEC2C_PORTABLE)
+#define NEC2C_NO_POSIX_SIGNALS 1
+#else
 #include <sys/times.h>
+#endif
 
 #ifndef	TRUE
 #define	TRUE	1

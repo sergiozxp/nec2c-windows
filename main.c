@@ -81,9 +81,18 @@ int main( int argc, char **argv )
 
   /*** signal handler related code ***/
   /* new and old actions for sigaction() */
+#ifndef NEC2C_NO_POSIX_SIGNALS
   struct sigaction sa_new, sa_old;
+#endif
 
 
+#ifdef NEC2C_NO_POSIX_SIGNALS
+  signal( SIGINT,  sig_handler );
+  signal( SIGSEGV, sig_handler );
+  signal( SIGFPE,  sig_handler );
+  signal( SIGTERM, sig_handler );
+  signal( SIGABRT, sig_handler );
+#else
   /* initialize new actions */
   sa_new.sa_handler = sig_handler;
   sigemptyset( &sa_new.sa_mask );
@@ -95,6 +104,7 @@ int main( int argc, char **argv )
   sigaction( SIGFPE,  &sa_new, 0 );
   sigaction( SIGTERM, &sa_new, 0 );
   sigaction( SIGABRT, &sa_new, 0 );
+#endif
 
   /*** command line arguments handler ***/
   if( argc == 1 )

@@ -1,0 +1,63 @@
+name: build-nec2c-win64
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: mingw-w64-ucrt-x86_64-gcc
+
+      - name: Compilar nec2c.exe (estático, 64 bits)
+        shell: msys2 {0}
+        run: |
+          gcc -O2 -static -DPACKAGE_STRING='"nec2c 1.3"' -o nec2c.exe \
+            calculations.c geometry.c input.c matrix.c network.c shared.c fields.c \
+            ground.c main.c misc.c radiation.c somnec.c -lm
+          file nec2c.exe || true
+          objdump -p nec2c.exe | grep -E "DLL Name|Characteristics|Magic" | tee dlls.txt
+          sha256sum nec2c.exe | tee nec2c.exe.sha256
+
+      - name: Probar desde CMD de Windows, sin MSYS2 en el PATH
+        shell: cmd
+        run: |
+          nec2c.exe -v
+          nec2c.exe -i Input\3E_.NEC -o smoke_test_3E_output.txt
+          echo exit code: %ERRORLEVEL%
+          dir smoke_test_3E_output.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nec2c-win64
+          path: |
+            nec2c.exe
+            nec2c.exe.sha256
+            dlls.txt
+            smoke_test_3E_output.txt
+
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.3-win64
+          name: nec2c 1.3 para Windows de 64 bits
+          body: |
+            nec2c.exe compilado con GCC (MSYS2 UCRT64), enlazado estáticamente.
+            Fuente: KJ7LNW/nec2c @ 55be1e0 con un parche mínimo de portabilidad
+            (sigaction -> signal, times -> clock), ver commit "Portabilidad Windows".
+          files: |
+            nec2c.exe
+            nec2c.exe.sha256
+            dlls.txt
+            smoke_test_3E_output.txt
