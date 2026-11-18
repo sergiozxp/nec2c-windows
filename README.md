@@ -83,6 +83,7 @@ La referencia completa está en el manual de NEC-2 (Burke y Poggio, Lawrence Liv
   | `#include <sys/times.h>` | se omite |
 
   En Linux el comportamiento no cambia: los cambios solo se activan con `_WIN32` o `NEC2C_PORTABLE`.
+- El parche está también en [`patches/windows-portability.patch`](patches/windows-portability.patch).
 - El archivo `README` original quedó como `README.upstream.txt`.
 
 ## Qué se verificó, y qué no
@@ -95,6 +96,8 @@ La referencia completa está en el manual de NEC-2 (Burke y Poggio, Lawrence Liv
 - El ejecutable no está firmado digitalmente, así que Windows SmartScreen o un antivirus pueden mostrar un aviso.
 
 ## Compilar tú mismo
+
+Los comandos exactos, con lo que se probó en cada paso, están en [docs/PROCEDIMIENTO.md](docs/PROCEDIMIENTO.md).
 
 **En GitHub:** pestaña *Actions* → `build-nec2c-win64` → *Run workflow*. El resultado queda como artefacto y como Release.
 

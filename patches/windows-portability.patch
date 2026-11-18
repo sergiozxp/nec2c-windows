@@ -1,0 +1,69 @@
+diff --git a/main.c b/main.c
+index 5e0900b..19ac470 100644
+--- a/main.c
++++ b/main.c
+@@ -81,9 +81,18 @@ int main( int argc, char **argv )
+ 
+   /*** signal handler related code ***/
+   /* new and old actions for sigaction() */
++#ifndef NEC2C_NO_POSIX_SIGNALS
+   struct sigaction sa_new, sa_old;
++#endif
+ 
+ 
++#ifdef NEC2C_NO_POSIX_SIGNALS
++  signal( SIGINT,  sig_handler );
++  signal( SIGSEGV, sig_handler );
++  signal( SIGFPE,  sig_handler );
++  signal( SIGTERM, sig_handler );
++  signal( SIGABRT, sig_handler );
++#else
+   /* initialize new actions */
+   sa_new.sa_handler = sig_handler;
+   sigemptyset( &sa_new.sa_mask );
+@@ -95,6 +104,7 @@ int main( int argc, char **argv )
+   sigaction( SIGFPE,  &sa_new, 0 );
+   sigaction( SIGTERM, &sa_new, 0 );
+   sigaction( SIGABRT, &sa_new, 0 );
++#endif
+ 
+   /*** command line arguments handler ***/
+   if( argc == 1 )
+diff --git a/misc.c b/misc.c
+index 0b7ef68..6752807 100644
+--- a/misc.c
++++ b/misc.c
+@@ -77,12 +77,17 @@ void abort_on_error( int why )
+ /* Returns process time (user+system) BUT in _msec_ */
+ void secnds( double *x)
+ {
++#ifdef NEC2C_NO_POSIX_SIGNALS
++  /* Windows / portable: process CPU time through clock() */
++  *x = 1000.0 * (double)clock() / (double)CLOCKS_PER_SEC;
++#else
+   struct tms buffer;
+   double clk_tck;
+ 
+   times(&buffer);
+   clk_tck = sysconf( _SC_CLK_TCK );
+   *x = 1000.0 * (double)(buffer.tms_utime + buffer.tms_stime) / clk_tck;
++#endif
+ 
+   return;
+ }
+diff --git a/nec2c.h b/nec2c.h
+index 5354032..d9773b9 100644
+--- a/nec2c.h
++++ b/nec2c.h
+@@ -12,7 +12,11 @@
+ #include <errno.h>
+ #include <time.h>
+ #include <sys/types.h>
++#if defined(_WIN32) || defined(NEC2C_PORTABLE)
++#define NEC2C_NO_POSIX_SIGNALS 1
++#else
+ #include <sys/times.h>
++#endif
+ 
+ #ifndef	TRUE
+ #define	TRUE	1
